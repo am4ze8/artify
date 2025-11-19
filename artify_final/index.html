@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Artify — Home</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Project CSS (paste the styles.css you already added) -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <!-- TOP NAV -->
+  <nav class="topbar container-narrow">
+    <a class="brand" href="index.html">Artify</a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="gallery.html" class="nav-link">Gallery</a>
+      <a href="features.html" class="nav-link">Features</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+  </nav>
+
+  <!-- MAIN (page-fade class used by script for transitions) -->
+  <main class="container-narrow page-fade">
+    <!-- HERO: full-bleed wrapper (if you used hero-full-wrap earlier, you can keep it;
+         here we use the regular hero and the CSS handles full feel) -->
+    <section class="hero">
+      <div class="hero-left card-styled">
+        <h1>Artify — Share your music & art</h1>
+        <p class="muted">A student project to upload and preview artworks, edits and short songs. Frontend-only — HTML, CSS, Bootstrap, JavaScript.</p>
+
+        <div class="hero-actions" style="margin-top:12px; display:flex; gap:12px;">
+          <a class="btn btn-primary" href="gallery.html">Open Gallery</a>
+          <a class="btn btn-outline-secondary" href="features.html">See Features</a>
+        </div>
+
+        <div class="quick-note" style="margin-top:12px">
+          <small class="muted">Tip: use small images/audio (≤500KB) to avoid localStorage limits during the demo.</small>
+        </div>
+      </div>
+
+      <aside class="hero-right card-preview">
+        <div class="preview-header">
+          <div><strong>Recent uploads</strong><small class="muted" style="margin-left:8px"> (saved in browser)</small></div>
+          <div class="muted small hidden-mobile">Demo</div>
+        </div>
+
+        <div id="homePreview" class="preview-list">
+          <!-- JS will populate up to 3 items (seeded by script.js) -->
+        </div>
+
+        <div style="text-align:right;margin-top:10px">
+          <a class="link-muted" href="gallery.html">View all →</a>
+        </div>
+      </aside>
+    </section>
+
+    <!-- WHY + HOW -->
+    <section class="why row" style="margin-top:20px; gap:12px;">
+      <div class="col-md-6">
+        <div class="card-styled small-card">
+          <h5>Why Artify?</h5>
+          <p class="muted">Minimal UI, client-side storage for demo, and easy to explain in viva.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card-styled small-card">
+          <h5>How it works</h5>
+          <ul class="muted" style="padding-left:18px;margin:6px 0;">
+            <li>Upload files on Gallery (FileReader → base64)</li>
+            <li>Save posts in browser localStorage</li>
+            <li>Render gallery from localStorage and preview in modal</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <section style="margin-top:22px">
+      <div class="card-styled search-card">
+        <div class="d-flex gap-2 align-items-center">
+          <input id="searchInput" class="form-control" placeholder="Search by title, author or description">
+          <button id="searchBtn" class="btn btn-outline-primary">Search</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>© Artify • Student Project</div>
+        <div class="muted small">Made by: Naitik, Atharv, Piyush, Arul</div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- PREVIEW MODAL (shared) -->
+  <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="previewBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Shared project JS (must include your main logic + the small helpers added above) -->
+  <script src="assets/js/script.js"></script>
+
+  <!-- Small inline snippet: render 3 previews on home (keeps HTML minimal) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // get posts (seed handled in script.js)
+      const raw = localStorage.getItem('artify_posts_v2') || '[]';
+      const posts = JSON.parse(raw);
+      const previewBox = document.getElementById('homePreview');
+      previewBox.innerHTML = '';
+      if(!posts || posts.length === 0){
+        previewBox.innerHTML = '<div class="muted">No uploads yet. Go to Gallery to add your work.</div>';
+        return;
+      }
+      posts.slice(0,3).forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'small-preview';
+        if(p.type === 'image'){
+          el.innerHTML = `<img src="${p.dataURL}" alt="${p.title}"><div><strong>${(p.title||'Untitled')}</strong><div class="muted small">by ${(p.author||'Anon')}</div></div>`;
+        } else {
+          el.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px;"><strong>${(p.title||'Untitled')}</strong><div class="muted small">by ${(p.author||'Anon')}</div><audio controls src="${p.dataURL}" style="max-width:220px"></audio></div>`;
+        }
+        previewBox.appendChild(el);
+      });
+
+      // hook search button -> open gallery with query
+      const s = document.getElementById('searchInput');
+      document.getElementById('searchBtn').addEventListener('click', () => {
+        const q = s.value.trim();
+        location.href = 'gallery.html#q=' + encodeURIComponent(q);
+      });
+    });
+  </script>
+</body>
+</html>
