@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — Artify</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <nav class="topbar container-narrow">
+    <a class="brand" href="index.html">Artify</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="gallery.html" class="nav-link">Gallery</a>
+      <a href="features.html" class="nav-link">Features</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+  </nav>
+
+  <main class="container-narrow page-fade">
+    <h2 style="margin-top:8px; color:#ffffff;">About Artify</h2>
+
+    <div class="card-styled" style="margin-top:12px">
+      <p class="muted">Artify is a student-built frontend project demonstrating how to build a simple Music & Art community prototype using only HTML, CSS, Bootstrap and vanilla JavaScript. Uploads are previewed and stored locally for demo purposes.</p>
+
+      <h5 style="margin-top:12px">Project goals</h5>
+      <ul class="muted" style="padding-left:18px">
+        <li>Implement required assignment features with allowed technologies.</li>
+        <li>Create a clean UI that is easy to demo and explain.</li>
+        <li>Show basic client-side persistence and interactivity.</li>
+      </ul>
+
+      <h5 style="margin-top:10px">Technical notes</h5>
+      <p class="muted">Uploads are converted to base64 using <code>FileReader.readAsDataURL()</code> and saved under <code>artify_posts_v2</code> in localStorage.</p>
+      <p class="muted">For production you would use a backend and cloud storage (Node/Express + S3, etc.).</p>
+
+      <h5 style="margin-top:10px">Viva tip</h5>
+      <p class="muted">Explain the flow: seed() (demo data), handleUploadForm() (reads and stores uploads), renderGallery() (renders posts), openPreview() (modal preview).</p>
+    </div>
+
+    <footer class="site-footer" style="margin-top:18px">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>© Artify • Student Project</div>
+        <div class="muted small">Made by: Naitik, Atharv, Piyush, Arul</div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/script.js"></script>
+</body>
+</html>
