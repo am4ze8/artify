@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gallery — Artify</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Project CSS -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <!-- TOP NAV -->
+  <nav class="topbar container-narrow">
+    <a class="brand" href="index.html">Artify</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="gallery.html" class="nav-link">Gallery</a>
+      <a href="features.html" class="nav-link">Features</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="container-narrow page-fade">
+    <h2 style="color:white; margin-top:8px">Gallery</h2>
+
+    <!-- Search row -->
+    <div class="d-flex gap-2" style="margin-top:10px;">
+      <input id="searchInput" class="form-control" placeholder="Search by title, author or description">
+      <button id="clearBtn" style="color:white" class="btn btn-outline-secondary">Clear</button>
+    </div>
+
+    <!-- Grid -->
+    <section style="margin-top:18px">
+      <div id="galleryGrid" class="grid"></div>
+    </section>
+
+    <!-- Upload form -->
+    <section style="margin-top:22px">
+      <h5 style="color:white">Upload (Image or Audio)</h5>
+      <form id="uploadForm" class="form-card" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Choose file (image or audio)</label>
+          <input id="uploadFile" class="form-control" type="file" accept="image/*,audio/*" required>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Title</label>
+            <input id="uploadTitle" class="form-control" placeholder="Title (example: My edit)">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Author</label>
+            <input id="uploadAuthor" class="form-control" placeholder="Your name">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea id="uploadDescription" class="form-control" rows="2" placeholder="Optional short description"></textarea>
+        </div>
+
+        <div style="text-align:right">
+          <button id="uploadBtn" class="btn btn-primary">Upload</button>
+        </div>
+      </form>
+    </section>
+
+    <footer class="site-footer">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>© Artify • Student Project</div>
+        <div class="muted small">Made by: Naitik, Atharv, Piyush, Arul</div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- PREVIEW MODAL -->
+  <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="previewBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Shared project JS -->
+  <script src="assets/js/script.js"></script>
+
+  <!-- Gallery page init -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // read query from hash if present: gallery.html#q=term
+      const q = location.hash.startsWith('#q=') ? decodeURIComponent(location.hash.slice(3)) : '';
+      if(q){
+        const s = document.getElementById('searchInput');
+        if(s) s.value = q;
+      }
+
+      // render with initial filter (empty or hash)
+      renderGallery(q);
+
+      // live search
+      const searchEl = document.getElementById('searchInput');
+      if(searchEl) searchEl.addEventListener('input', (e) => renderGallery(e.target.value.trim()));
+
+      // clear button
+      document.getElementById('clearBtn').addEventListener('click', ()=> {
+        const s = document.getElementById('searchInput');
+        if(s) s.value = '';
+        renderGallery('');
+      });
+
+      // upload form handled by shared script (it attaches submit handler on DOMContentLoaded)
+      // but ensure upload form exists
+      const uploadForm = document.getElementById('uploadForm');
+      if(uploadForm) uploadForm.addEventListener('submit', handleUploadForm);
+    });
+  </script>
+</body>
+</html>
