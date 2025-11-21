@@ -1,0 +1,578 @@
+/* ===========================
+   Artify - full styles.css (FINAL)
+   Paste this whole file (replace old styles.css)
+   Includes robust background so gradient won't cut on scroll
+   =========================== */
+
+/* ---------- Palette & root vars ---------- */
+:root{
+  --bg: #ffffff;
+  --text: #2C2E3A;        /* primary text (dark blue-gray) */
+  --muted: #B3B4BD;       /* light gray */
+  --accent: #dde0f5;      /* bright royal blue */
+  --deep: #050A44;        /* deep navy */
+  --header-dark: #141619; /* top header dark */
+  --card: #f0f0f5;        /* soft card bg */
+  --radius: 12px;
+  --shadow-sm: 0 6px 18px rgba(2,8,40,0.06);
+  --shadow-lg: 0 22px 60px rgba(10,16,60,0.08);
+  --container: 1200px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ---------- Reset / base ---------- */
+*{box-sizing: border-box}
+html,body{height:100%}
+body{
+  
+  margin:0;
+  color:var(--text);
+  line-height:1.45;
+  -webkit-text-size-adjust:100%;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Background: robust gradient + blobs + continuous noise (final) ---------- */
+
+/* ensure full-height base */
+html, body {
+  height: 100%;
+  min-height: 100%;
+}
+
+/* base gradient - fixed so it doesn't move relative to viewport */
+body{
+  margin: 0;
+  position: relative;
+  overflow-x: hidden;                 /* avoid horizontal scroll from large blobs */
+  background: linear-gradient(140deg, rgba(5,10,68,0.98) 0%, rgba(147, 159, 238, 0.92) 45%, rgba(240,240,245,0.02) 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Make sure pseudo-elements are fixed and large enough to never "end" while scrolling.
+   Use wide widths (140vw) and heights (120vh) so they cover long pages. */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(90px);
+  opacity: 0.14;
+  left: 50%;
+  transform: translateX(-50%);
+  /* big safe size so scrolling never shows the edge */
+  width: 140vw;
+  height: 120vh;
+}
+
+/* warm bluish blob (top-left-ish visual) */
+body::before{
+  background: radial-gradient(circle at 20% 30%, rgba(10,34,192,0.36), rgba(5,10,68,0.0) 45%);
+  top: -20vh;   /* placed above the viewport a bit */
+  opacity: 0.18;
+}
+
+/* cooler deep blob (lower-right-ish visual) */
+body::after{
+  background: radial-gradient(circle at 80% 70%, rgba(5,10,68,0.30), rgba(10,34,192,0.0) 45%);
+  top: 10vh;    /* starts a bit below top so it covers mid-below areas */
+  opacity: 0.12;
+}
+
+/* subtle noise overlay; keep z-index low so content sits above it */
+html::after{
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.03'/></svg>");
+  mix-blend-mode: overlay;
+  opacity: 0.9;
+  background-repeat: repeat;
+}
+
+/* ensure main content sits above background layers */
+main, .container-narrow, .card-styled, .card-preview, .gallery-item {
+  position: relative;
+  z-index: 2;
+  background-clip: padding-box;
+}
+
+/* reduce intensity and skip blobs on small screens */
+@media (max-width: 900px){
+  body::before, body::after { display: none; }
+  html::after { opacity: 0.65; }
+  body { background-attachment: scroll; }
+}
+
+/* ---------- Layout container (full width with side padding) ---------- */
+.container-narrow{
+  width: 100%;
+  max-width: none;          /* full-bleed layout, but padded */
+  margin: 0 auto;
+  padding: 24px 64px;       /* desktop gap - adjust as needed */
+  box-sizing: border-box;
+}
+
+/* responsive padding */
+@media (max-width: 1100px){
+  .container-narrow{ padding: 20px 40px; }
+}
+@media (max-width: 768px){
+  .container-narrow{ padding: 18px 20px; }
+}
+
+/* ---------- Top navigation (sticky header) ---------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  background: var(--header-dark);
+  border-bottom: 1px solid #2C2E3A;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(2,2,5,0.12);
+}
+
+/* Brand */
+.brand {
+  font-weight: 700;
+  font-size: 20px;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.2px;
+}
+
+/* Nav links container */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+/* Nav link visual */
+.nav-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  position: relative;
+  padding: 6px 0;
+  transition: color 220ms cubic-bezier(.2,.9,.2,1), transform 200ms ease;
+}
+
+/* Underline animation */
+.nav-link::after{
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--deep));
+  border-radius: 4px;
+  transition: width 260ms cubic-bezier(.2,.9,.2,1);
+  opacity: 0.95;
+}
+
+.nav-link:hover{
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.06);
+}
+
+.nav-link:hover::after{ width: 100%; }
+
+/* active helper (use class "active" in HTML for current page) */
+.nav-link.active{ color: #ffffff; }
+.nav-link.active::after{ width: 100%; }
+
+/* keyboard focus */
+.nav-link:focus { outline: none; box-shadow: 0 0 0 4px rgba(10,34,192,0.09); border-radius: 6px; }
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: linear-gradient(180deg, var(--accent), #0830d6);
+  border: none;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(10,16,60,0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.03);
+  box-shadow: 0 18px 40px rgba(10,16,60,0.12);
+}
+
+.btn-outline-secondary {
+  border-color: rgba(179,180,189,0.22);
+  color: var(--muted);
+  background: transparent;
+  transition: background 180ms ease, color 180ms ease, transform 180ms;
+}
+.btn-outline-secondary:hover {
+  background: rgba(10,16,60,0.04);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* ---------- Hero (balanced default) ---------- */
+.hero {
+  display: flex;
+  gap: 26px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+/* left column (text) */
+.hero-left {
+  flex: 1.25;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* right column (preview) */
+.hero-right {
+  flex: 0 0 360px;
+  max-width: 38%;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(12,16,60,0.98), rgba(6,8,30,0.95));
+  color: #fff;
+  border: 1px solid rgba(10,10,10,0.12);
+  box-shadow: var(--shadow-sm);
+}
+
+/* copy card (left) */
+.card-styled {
+  background: linear-gradient(180deg,#ffffff, #fbfbff);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(10,10,10,0.03);
+}
+
+/* hero headline */
+.hero-left h1{
+  font-size: 34px;
+  line-height: 1.08;
+  margin: 0;
+  color: var(--deep);
+  letter-spacing: -0.2px;
+}
+
+/* hero supporting text */
+.hero-left .muted{
+  font-size: 15px;
+  color: rgba(44,46,58,0.9);
+}
+
+/* preview header */
+.preview-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color: rgba(255,255,255,0.95);
+  font-weight:600;
+}
+
+/* preview list (vertical) */
+.preview-list {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:6px;
+}
+
+/* each small preview */
+.small-preview {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  background: transparent;
+}
+
+/* enlarged thumbnail for hero */
+.small-preview img {
+  width: 110px;
+  height: 78px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 18px rgba(2,8,40,0.12);
+  transition: transform 220ms ease;
+}
+.small-preview:hover img { transform: scale(1.04); }
+
+.small-preview div { display:flex; flex-direction:column; gap:3px; color: rgba(255,255,255,0.95); }
+.small-preview strong { font-size:14px; color:#fff; }
+.small-preview .muted { font-size:13px; color: rgba(255,255,255,0.82); }
+
+/* ---------- Why / How readability ---------- */
+.why .muted,
+.card-styled .muted,
+.why p,
+.why li,
+.card-styled p,
+.card-styled ul li {
+  color: rgba(44,46,58,0.92);   /* readable dark color */
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.why h5,
+.card-styled h5 { color: var(--deep); margin-bottom:6px; }
+
+/* ---------- Gallery grid & items ---------- */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.gallery-item{
+  background: rgba(255,255,255,0.95);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(10,10,10,0.04);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.gallery-item:hover{
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.gallery-thumb{
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  transition: transform 320ms cubic-bezier(.2,.9,.2,1);
+}
+.gallery-item:hover .gallery-thumb{ transform: scale(1.07); }
+
+/* Optional circular thumbnail helper */
+.thumb-circle{
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border: 2px solid rgba(10,10,10,0.06);
+}
+
+/* gallery body */
+.gallery-body{ padding: 10px; }
+.meta{ font-size: 13px; color: var(--muted); }
+
+/* ---------- Forms & cards ---------- */
+.form-card{
+  background: rgba(255,255,255,0.95);
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(10,10,10,0.03);
+  box-shadow: var(--shadow-sm);
+}
+
+/* apply slight glass effect where supported */
+.card-styled, .card-preview, .gallery-item, .form-card {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ---------- Footer ---------- */
+.site-footer{
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(44,46,58,0.06);
+  color: var(--muted);
+  font-size: 14px;
+  background: linear-gradient(180deg, rgba(10,10,20,0.0), rgba(10,10,20,0.01));
+}
+
+/* ---------- Hero (reference-style large media + overlapping tiles) ---------- */
+/* hero-heroWrap and hero-media are used by the new home layout (big image + tiles) */
+.hero-heroWrap { margin-top: 18px; }
+
+/* full-bleed media band */
+.hero-media{
+  position: relative;
+  width: 100%;
+  min-height: 420px;              /* tall hero similar to reference */
+  display: block;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid rgba(0,0,0,0.18);
+}
+
+/* optional default hero background if none set (place your fallback image here) */
+#heroMedia {
+  background-image: url('assets/images/hero-default.jpg'); /* update with your image or remove */
+}
+
+/* dark gradient overlay so text is readable */
+.hero-overlay{
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(5,10,68,0.64) 10%, rgba(5,10,68,0.6) 40%, rgba(5,10,68,0.85) 100%);
+  z-index:1;
+}
+
+/* inner content constrained and sits above overlay */
+.hero-inner{
+  position: relative;
+  z-index: 3;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  padding: 44px 0;    /* uses container-narrow padding for horizontal spacing */
+}
+
+/* left block with headings */
+.hero-left-lean{
+  max-width: 780px;
+  color: #fff;
+}
+.hero-brand.small { font-size: 14px; color: rgba(255,255,255,0.9); font-weight:600; margin-bottom:8px; }
+.hero-title{ font-size: 44px; line-height:1.02; margin:0 0 8px; font-weight:700; color: #fff; letter-spacing:-0.3px; }
+.hero-sub{ color: rgba(255,255,255,0.88); margin:0 0 12px; font-size:16px; }
+
+/* CTAs aligned slightly under heading */
+.hero-ctas { display:flex; gap:12px; margin-top:6px; }
+
+/* play button area on the left/mid area */
+.hero-play{ display:flex; flex-direction:column; align-items:flex-start; gap:8px; color: rgba(255,255,255,0.95); margin-left: 12px; }
+.play-btn{
+  width:72px; height:72px; border-radius:50%;
+  border: 2px solid rgba(255,255,255,0.14);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  color: #fff; font-size:20px; display:inline-grid; place-items:center; cursor:pointer;
+  box-shadow: 0 8px 22px rgba(2,8,40,0.28);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.play-btn:hover{ transform: scale(1.06); box-shadow: 0 18px 48px rgba(2,8,40,0.32); }
+.play-icon{ font-weight:700; margin-left:4px; }
+
+/* tiles row that overlaps hero bottom */
+.hero-tiles{
+  position: relative;
+  margin-top: -60px; /* pull up to overlap hero */
+  z-index: 4;
+  padding-bottom: 12px;
+}
+
+/* grid of tiles */
+.tiles-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  align-items:stretch;
+}
+
+/* each tile card */
+.tile-card{
+  background: rgba(0,0,0,0.62);
+  color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 240px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  box-shadow: 0 18px 44px rgba(2,8,40,0.22);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: transform 260ms ease, box-shadow 260ms ease;
+  cursor:pointer;
+}
+
+.tile-card:hover{ transform: translateY(-8px); box-shadow: 0 28px 72px rgba(2,8,40,0.28); }
+
+/* tile media (image cover) */
+.tile-card .tile-media{
+  position:absolute; inset:0; background-size:cover; background-position:center; filter: contrast(0.96) saturate(0.98);
+  z-index:0;
+}
+.tile-card .tile-overlay{
+  position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.64) 100%); z-index:1;
+}
+
+/* tile bottom content */
+.tile-card .tile-body{
+  position:relative; z-index:2; padding:18px; display:flex; flex-direction:column; gap:6px;
+}
+.tile-card .tile-date{ font-size:12px; color: rgba(255,255,255,0.78); }
+.tile-card .tile-title{ font-size:16px; font-weight:700; color:#fff; }
+.tile-card .tile-cta{ margin-top:8px; align-self:flex-start; }
+
+/* make first tile a little taller for visual hierarchy */
+.tiles-grid > .tile-card:nth-child(1){
+  min-height: 280px;
+}
+
+/* ---------- Page fade transitions ---------- */
+.page-fade { opacity: 0; transform: translateY(6px); transition: opacity 360ms ease, transform 360ms ease; }
+.page-fade.page-visible { opacity: 1; transform: translateY(0); }
+
+/* ---------- Focus accessibility ---------- */
+.nav-link:focus, .btn:focus, input:focus, textarea:focus {
+  outline: 3px solid rgba(10,34,192,0.14);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- Responsive adjustments ---------- */
+@media (max-width: 1100px){
+  .hero-title{ font-size:36px; }
+  .hero-media{ min-height:380px; }
+  .hero-tiles{ margin-top:-46px; }
+}
+
+@media (max-width: 920px){
+  .hero{ flex-direction: column; gap:14px; align-items: stretch; }
+  .hero-right{ width:100%; max-width:none; min-width:auto; }
+  .preview-list{ flex-direction: row; gap:10px; overflow-x: auto; padding-bottom:6px; }
+  .small-preview img{ width:92px; height:64px; }
+  .hero-left h1{ font-size:28px; }
+  .grid{ grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .container-narrow{ padding: 18px 20px; }
+  .tiles-grid{ grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .tile-card{ min-height:200px; }
+}
+
+@media (max-width: 600px){
+  .hero-inner{ flex-direction:column; align-items:flex-start; gap:18px; padding:28px 0; }
+  .hero-play{ flex-direction:row; align-items:center; gap:12px; }
+  .tiles-grid{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; }
+  .tile-card{ min-height:180px; }
+  .tiles-grid > .tile-card:nth-child(1){ min-height:200px; }
+  .hero-title{ font-size:28px; }
+}
+
+/* ---------- Small helpers ---------- */
+.center-inline{ display:inline-flex; align-items:center; gap:8px; }
+.hidden-mobile{ display:initial; }
+@media (max-width:480px){ .hidden-mobile{ display:none!important; } }
